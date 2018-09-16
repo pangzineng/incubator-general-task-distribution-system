@@ -1,0 +1,244 @@
+basePath: /v1
+definitions:
+  _sys:
+    description: system generated fields
+    properties:
+      created_by: {description: the creator identity, type: string}
+      created_ts: {description: the timestamp of the created time of the object, type: integer}
+      deleted: {description: the indication of soft deletion, type: boolean}
+      deleted_by: {description: the deletor identity, type: string}
+      deleted_ts: {description: the timestamp of the soft deletion time of the object,
+        type: integer}
+      updated_by: {description: the updator identify, type: string}
+      updated_ts: {description: the timestamp of the last updated time of the object,
+        type: integer}
+    type: object
+  analysis:
+    description: The video or stream for analysis
+    properties:
+      _id: {description: The unique ID, type: string}
+      _sys: {$ref: '#/definitions/_sys'}
+      eyeID: {description: ID of the associated eye, type: string}
+      source:
+        description: The video or stream source
+        properties:
+          meta:
+            description: meta data of the video source
+            properties:
+              startTime: {description: The start time of the video if it is a file,
+                type: string}
+            type: object
+          protocol:
+            default: https
+            description: the transfer protocol of the video source
+            enum: [rtsp, http, https, file]
+            type: string
+          type:
+            default: file
+            description: video source format type
+            enum: [file, stream]
+            type: string
+          uri: {description: the uri of the video source, type: string}
+        type: object
+      status:
+        default: new
+        description: progress of analysis
+        enum: [new, running, finished, error]
+        type: string
+      type:
+        default: tiny
+        description: machine learning approach
+        enum: [full, tiny]
+        type: string
+    type: object
+  eye:
+    description: The tracking camera
+    properties:
+      _id: {description: The unique ID, type: string}
+      _sys: {$ref: '#/definitions/_sys'}
+      name: {description: The name of the camera, type: string}
+      source:
+        description: source information of the camera
+        properties:
+          address: {description: installation address, type: string}
+          geo:
+            description: geo location info
+            properties:
+              lat: {description: latitude, type: number}
+              lon: {description: longitude, type: number}
+            type: object
+        type: object
+    type: object
+host: localhost:8888
+info: {description: "General data and job management interface. \n Language specific\
+    \ clients will be generated automatically based on the below specification. Do\
+    \ not write your own http interface to call these APIs.", title: Job System API,
+  version: 0.0.1}
+parameters:
+  limitParam: {default: 20, description: The numbers of items to return., in: query,
+    maximum: 50, minimum: 1, name: limit, required: false, type: integer}
+  offsetParam: {description: The number of items to skip before starting to collect
+      the result set., in: query, minimum: 0, name: offset, required: false, type: integer}
+  queryParam: {description: The stringify json query, in: query, name: q, required: false,
+    type: string}
+  sortFieldParam: {description: The sorting field, in: query, name: sort, required: false,
+    type: string}
+  sortOrderParam: {default: 1, description: The sorting order where 1 is asc and -1
+      is desc, in: query, name: order, required: false, type: integer}
+paths:
+  /analysis:
+    get:
+      consumes: [application/json, application/xml]
+      operationId: getAllanalysis
+      parameters:
+      - {$ref: '#/parameters/offsetParam'}
+      - {$ref: '#/parameters/limitParam'}
+      - {$ref: '#/parameters/queryParam'}
+      - {$ref: '#/parameters/sortFieldParam'}
+      - {$ref: '#/parameters/sortOrderParam'}
+      produces: [application/json, application/xml]
+      responses:
+        '200':
+          description: Got the analysis list
+          schema:
+            items: {$ref: '#/definitions/analysis'}
+            type: array
+      summary: Get the list of all analysis
+      tags: [analysis]
+    post:
+      consumes: [application/json, application/xml]
+      operationId: createanalysis
+      parameters:
+      - description: analysis to be created
+        in: body
+        name: body
+        schema: {$ref: '#/definitions/analysis'}
+      produces: [application/json, application/xml]
+      responses:
+        '200':
+          description: Created
+          schema: {description: the ID of the newly created instance, type: string}
+        '405': {description: Invalid input}
+      summary: Create a new analysis
+      tags: [analysis]
+  /analysis/${ID}:
+    delete:
+      consumes: [application/json, application/xml]
+      operationId: deleteanalysis
+      parameters:
+      - {in: path, name: ID, required: true, type: string}
+      produces: [application/json, application/xml]
+      responses:
+        '200': {description: analysis instance successfully deleted}
+        '404': {description: analysis instance not found}
+      summary: Delete the analysis instance based on ID
+      tags: [analysis]
+    get:
+      consumes: [application/json, application/xml]
+      operationId: getanalysis
+      parameters:
+      - {in: path, name: ID, required: true, type: string}
+      produces: [application/json, application/xml]
+      responses:
+        '200':
+          description: Got the analysis instance
+          schema: {$ref: '#/definitions/analysis'}
+        '404': {description: analysis instance not found}
+        '405': {description: Invalid input}
+      summary: Get the analysis instance based on ID
+      tags: [analysis]
+    patch:
+      consumes: [application/json, application/xml]
+      operationId: updateanalysis
+      parameters:
+      - {in: path, name: ID, required: true, type: string}
+      - description: Updated analysis instance
+        in: body
+        name: body
+        schema: {$ref: '#/definitions/analysis'}
+      produces: [application/json, application/xml]
+      responses:
+        '200': {description: analysis instance updated}
+      summary: Update the analysis instance based on ID
+      tags: [analysis]
+  /eye:
+    get:
+      consumes: [application/json, application/xml]
+      operationId: getAlleye
+      parameters:
+      - {$ref: '#/parameters/offsetParam'}
+      - {$ref: '#/parameters/limitParam'}
+      - {$ref: '#/parameters/queryParam'}
+      - {$ref: '#/parameters/sortFieldParam'}
+      - {$ref: '#/parameters/sortOrderParam'}
+      produces: [application/json, application/xml]
+      responses:
+        '200':
+          description: Got the eye list
+          schema:
+            items: {$ref: '#/definitions/eye'}
+            type: array
+      summary: Get the list of all eye
+      tags: [eye]
+    post:
+      consumes: [application/json, application/xml]
+      operationId: createeye
+      parameters:
+      - description: eye to be created
+        in: body
+        name: body
+        schema: {$ref: '#/definitions/eye'}
+      produces: [application/json, application/xml]
+      responses:
+        '200':
+          description: Created
+          schema: {description: the ID of the newly created instance, type: string}
+        '405': {description: Invalid input}
+      summary: Create a new eye
+      tags: [eye]
+  /eye/${ID}:
+    delete:
+      consumes: [application/json, application/xml]
+      operationId: deleteeye
+      parameters:
+      - {in: path, name: ID, required: true, type: string}
+      produces: [application/json, application/xml]
+      responses:
+        '200': {description: eye instance successfully deleted}
+        '404': {description: eye instance not found}
+      summary: Delete the eye instance based on ID
+      tags: [eye]
+    get:
+      consumes: [application/json, application/xml]
+      operationId: geteye
+      parameters:
+      - {in: path, name: ID, required: true, type: string}
+      produces: [application/json, application/xml]
+      responses:
+        '200':
+          description: Got the eye instance
+          schema: {$ref: '#/definitions/eye'}
+        '404': {description: eye instance not found}
+        '405': {description: Invalid input}
+      summary: Get the eye instance based on ID
+      tags: [eye]
+    patch:
+      consumes: [application/json, application/xml]
+      operationId: updateeye
+      parameters:
+      - {in: path, name: ID, required: true, type: string}
+      - description: Updated eye instance
+        in: body
+        name: body
+        schema: {$ref: '#/definitions/eye'}
+      produces: [application/json, application/xml]
+      responses:
+        '200': {description: eye instance updated}
+      summary: Update the eye instance based on ID
+      tags: [eye]
+schemes: [http]
+swagger: '2.0'
+tags:
+- {description: Everything about analysis, name: analysis}
+- {description: Everything about eye, name: eye}
+

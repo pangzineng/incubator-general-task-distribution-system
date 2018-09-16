@@ -1,0 +1,26 @@
+definitions:
+  _sys:
+    type: object
+    description: system generated fields
+    properties:
+      created_by:
+        type: string
+        description: the creator identity
+      created_ts:
+        type: integer
+        description: the timestamp of the created time of the object
+      updated_by:
+        type: string
+        description: the updator identify
+      updated_ts:
+        type: integer
+        description: the timestamp of the last updated time of the object
+      deleted:
+        type: boolean
+        description: the indication of soft deletion
+      deleted_by:
+        type: string
+        description: the deletor identity
+      deleted_ts:
+        type: integer
+        description: the timestamp of the soft deletion time of the object

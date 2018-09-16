@@ -1,0 +1,6 @@
+flask-cors
+pymongo>=3.7.0
+kombu
+python-bsonjs
+gunicorn
+redis
