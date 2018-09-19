@@ -29,22 +29,15 @@ definitions:
         type: object
         description: The video or stream source
         properties:
-          type:
-            type: string
-            description: video source format type
-            enum:
-              - file
-              - stream
-            default: file
           protocol:
             type: string
             description: the transfer protocol of the video source
             enum:
-              - rtsp
-              - http
-              - https
-              - file
-            default: https
+              - rtsp_stream
+              - http_stream
+              - http_file
+              - local_file
+            default: http_file
           uri:
             type: string
             description: the uri of the video source
