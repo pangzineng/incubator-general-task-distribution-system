@@ -2,7 +2,7 @@ version: '2.3'
 services:
     # api
     server:
-        image: realpixel-operation-gtds:0.1.0
+        image: gtds-realpixel-operation:0.1.0
         environment:
             - RABBITMQ_DEFAULT_USER=guest
             - RABBITMQ_DEFAULT_PASS=guest
@@ -33,16 +33,16 @@ services:
             - gtds
     database:
         image: mongo:latest
-        # volumes:
-        #     - /data/mongodb:/data/db
+        volumes:
+            - /data/mongodb:/data/db
         ports:
             - "27017:27017"
         networks:
             - gtds
     redis:
         image: redis:latest
-        # volumes:
-        #     - /data/redis:/data
+        volumes:
+            - /data/redis:/data
         ports:
             - "6379:6379"
         networks:
@@ -50,3 +50,5 @@ services:
 networks:
     gtds:
         driver: bridge
+volumes:
+    REALPIXEL:
