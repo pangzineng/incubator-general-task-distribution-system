@@ -1,0 +1,52 @@
+version: '2.3'
+services:
+    # api
+    server:
+        image: gtds-previewreality-operation:0.1.0
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest
+            - RABBITMQ_HOST=mq
+            - RABBITMQ_PORT=5672
+            - MONGODB_HOST=database
+            - MONGODB_PORT=27017
+            - REDIS_HOST=redis
+            - REDIS_DB=15
+        depends_on:
+            - mq
+            - database
+            - redis
+        ports:
+            - "8888:8888"
+        networks:
+            - gtds
+        restart: on-failure
+    mq:
+        image: rabbitmq:management
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        networks:
+            - gtds
+    database:
+        image: mongo:latest
+        # volumes:
+        #     - /data/mongodb:/data/db
+        ports:
+            - "27017:27017"
+        networks:
+            - gtds
+    redis:
+        image: redis:latest
+        # volumes:
+        #     - /data/redis:/data
+        ports:
+            - "6379:6379"
+        networks:
+            - gtds
+networks:
+    gtds:
+        driver: bridge
