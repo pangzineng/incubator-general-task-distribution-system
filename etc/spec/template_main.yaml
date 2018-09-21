@@ -33,6 +33,12 @@ parameters:
     required: false
     type: string
     description: The stringify json query
+  projectParam:
+    in: query
+    name: p
+    required: false
+    type: string
+    description: The stringify json projection
   sortFieldParam:
     in: query
     name: sort

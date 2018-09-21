@@ -85,7 +85,7 @@ def delete${KEY}(ID):  # noqa: E501
 
 
 
-def get_all${KEY}(offset=0, limit=20, q=None, sort=None, order=1):  # noqa: E501
+def get_all${KEY}(offset=0, limit=20, q=None, p=None, sort=None, order=1):  # noqa: E501
     """Get the list of all ${KEY}
 
      # noqa: E501
@@ -103,28 +103,20 @@ def get_all${KEY}(offset=0, limit=20, q=None, sort=None, order=1):  # noqa: E501
 
     :rtype: List[${KEY}]
     """
-    hkey = '{}|{}|{}|{}|{}'.format(q, offset, limit, sort, order)
+    hkey = '{}|{}|{}|{}|{}|{}'.format(q, p, offset, limit, sort, order)
     cache = r.hget(KEY, hkey)
     if cache:
         return json.loads(cache)
 
-    if q is not None:
-        try:
-            query = json.loads(q)
-            count = collection.count_documents(query)
-        except:
-            abort(400)
-        else:
-            if sort is not None:
-                docs = collection.find(query, skip=offset, limit=limit, sort=[(sort, order)])
-            else:
-                docs = collection.find(query, skip=offset, limit=limit)
-    else:
-        count = collection.count_documents({})
-        if sort is not None:
-            docs = collection.find(skip=offset, limit=limit, sort=[(sort, order)])
-        else:
-            docs = collection.find(skip=offset, limit=limit)
+    try:
+        filter_json = json.loads(q) if q is not None else None
+        projec_json = json.loads(p) if p is not None else None
+        sort_json = [(sort, order)] if sort is not None else None
+    except:
+        abort(400)
+
+    docs = collection.find(filter=filter_json, projection=projec_json, skip=offset, limit=limit, sort=sort_json)
+    count = collection.count_documents(filter_json or {})
     response = { 'total': count, 'results': [json.loads(bsonjs.dumps(doc.raw)) for doc in docs] }
     r.hset(KEY, hkey, json.dumps(response))
     return response

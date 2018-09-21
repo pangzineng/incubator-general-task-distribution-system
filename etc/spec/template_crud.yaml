@@ -43,6 +43,7 @@ paths:
         - $ref: '#/parameters/offsetParam'
         - $ref: '#/parameters/limitParam'
         - $ref: '#/parameters/queryParam'
+        - $ref: '#/parameters/projectParam'
         - $ref: '#/parameters/sortFieldParam'
         - $ref: '#/parameters/sortOrderParam'
       responses:
