@@ -4,7 +4,7 @@ info:
     General data and job management interface. 
      Language specific clients will be generated automatically based on the below specification. Do not write your own http interface to call these APIs.
   version: ${VERSION}
-  title: Job System API
+  title: ${NAME}
 host: ${HOST}
 basePath: /${BASE_PATH}
 tags: []

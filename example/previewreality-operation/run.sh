@@ -8,9 +8,9 @@ docker build \
     --build-arg SERVER_HOST=localhost \
     --build-arg SERVER_PORT=8888 \
     --build-arg SERVRE_BASE_PATH=v1 \
-    --build-arg SERVICE_NAME=RealPixel \
-    -t gtds-realpixel-operation:0.1.0 ../../
+    --build-arg SERVICE_NAME=PreviewReality \
+    -t gtds-previewreality-operation:0.1.0 ../../
 
 # run locally
-docker-compose -p realpixel-operation down &&
-docker-compose -p realpixel-operation up
+docker-compose -p previewreality-operation down &&
+docker-compose -p previewreality-operation up

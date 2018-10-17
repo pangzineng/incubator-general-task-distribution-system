@@ -6,6 +6,7 @@ import argparse
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("ver", help="The version number of this API specification")
+parser.add_argument("--name", help="Tha name of the API service", default="JobSystemAPI")
 parser.add_argument("--host", help="The host & port of the API endpoint", default="localhost:8888")
 parser.add_argument("--basepath", help="The base path of the API endpoint", default="v1")
 parser.add_argument("--definitions", help="The content of the definitions")
@@ -20,7 +21,7 @@ crud_str_template = open('etc/spec/template_crud.yaml', 'r').read()
 definitions_common = yaml.load(open('etc/spec/definitions_common.yaml','r'))
 definitions = yaml.load(args.definitions)
 
-main = yaml.load(main_str_template.replace('${VERSION}', args.ver).replace('${HOST}', args.host).replace('${BASE_PATH}', args.basepath))
+main = yaml.load(main_str_template.replace('${VERSION}', args.ver).replace('${HOST}', args.host).replace('${BASE_PATH}', args.basepath).replace('${NAME}', args.name))
 main = merger.merge(main, definitions_common)
 main = merger.merge(main, definitions)
 for key in definitions['definitions']:

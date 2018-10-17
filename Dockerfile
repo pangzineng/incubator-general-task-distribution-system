@@ -8,6 +8,7 @@ ARG SERVER_HOST
 ARG SERVER_PORT
 ARG SERVRE_BASE_PATH
 ARG SERVER_NAME
+ARG SERVICE_NAME
 
 ENV DEFINITIONS ${DEFINITIONS}
 ENV VERSION ${VERSION:-0.0.1}
@@ -16,14 +17,14 @@ ENV SERVER_HOST=${SERVER_HOST:-localhost}
 ENV SERVER_PORT=${SERVER_PORT:-8888}
 ENV SERVRE_BASE_PATH=${SERVRE_BASE_PATH:-v1}
 ENV SERVER_NAME=${SERVER_NAME:-python-flask-server}
-
+ENV SERVICE_NAME=${SERVICE_NAME:-JobSystemAPI}
 ## load codes into image
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 ## generate spec
 COPY etc/spec etc/spec
 COPY bin/spec-generation.py bin/spec-generation.py
-RUN python bin/spec-generation.py ${VERSION} --host ${SERVER_HOST}:${SERVER_PORT} --basepath ${SERVRE_BASE_PATH} --definitions "${DEFINITIONS}" --output ${SERVER_SPEC_FILE}
+RUN python bin/spec-generation.py ${VERSION} --host ${SERVER_HOST}:${SERVER_PORT} --basepath ${SERVRE_BASE_PATH} --definitions "${DEFINITIONS}" --output ${SERVER_SPEC_FILE} --name ${SERVICE_NAME}
 
 ## generate server
 FROM openjdk:8 AS j8
