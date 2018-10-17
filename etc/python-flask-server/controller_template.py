@@ -19,7 +19,20 @@ from bson.raw_bson import RawBSONDocument
 import redis
 
 KEY = "${KEY}"
+CUSTOM_KEY = "${CUSTOM_KEY}"
 SOFT_DELETE = os.getenv('SOFT_DELETE_FLAG', False)
+
+def dpath(dict_data):
+    if not CUSTOM_KEY:
+        return ''
+    try:
+        paths = CUSTOM_KEY.split(".")
+        data = dict_data
+        for i in range(0,len(paths)):
+            data = data[paths[i]]
+        return '.{}'.format(data)
+    except:
+        return ''
 
 try:
     ## mongodb connection
@@ -29,7 +42,6 @@ try:
     ## rabbitmq connection
     connection = Connection('amqp://{}:{}@{}:{}//'.format(os.getenv('RABBITMQ_DEFAULT_USER'),os.getenv('RABBITMQ_DEFAULT_PASS'),os.getenv('RABBITMQ_HOST'),os.getenv('RABBITMQ_PORT')))
     exchange = Exchange(KEY, type='topic')
-    queues = [Queue('{}.{}'.format(KEY, action), exchange=exchange, routing_key='{}.{}'.format(KEY, action)) for action in ['create', 'delete', 'update']]
     producer = Producer(connection, exchange=exchange)
     publisher = connection.ensure(producer, producer.publish, max_retries=5)
     ## redis connection
@@ -57,7 +69,10 @@ def create${KEY}(body=None):  # noqa: E501
     body['_sys'] = {'created_ts': int(time.time()), 'created_by': connexion.request.headers['x-api-user']}
     body_str = json.dumps(body)
     collection.insert_one(RawBSONDocument(bsonjs.loads(body_str)))
-    publisher(body_str, routing_key='{}.{}'.format(KEY, 'create'), retry=True, declare=queues, headers={'_id':doc_id})
+
+    routingKey='{}{}.{}'.format(KEY, dpath(body), 'create')
+    queues = [Queue(routingKey, exchange=exchange, routing_key=routingKey)]
+    publisher(body_str, routing_key=routingKey, retry=True, declare=queues, headers={'_id':doc_id})
 
     skey = '{}|{}'.format(KEY, doc_id)
     r.set(skey, body_str)
@@ -80,8 +95,12 @@ def delete${KEY}(ID):  # noqa: E501
     r.delete(skey)
     r.delete(KEY)
     q = {'_id': ID}
-    collection.delete_one(q)
-    publisher(json.dumps(q), routing_key='{}.{}'.format(KEY, 'delete'), retry=True, declare=queues, headers=q)
+    doc_mongo = collection.find_one_and_delete(q)
+    doc_str = bsonjs.dumps(doc_mongo.raw)
+
+    routingKey='{}{}.{}'.format(KEY, dpath(json.loads(doc_str)), 'delete')
+    queues = [Queue(routingKey, exchange=exchange, routing_key=routingKey)]
+    publisher(doc_str, routing_key=routingKey, retry=True, declare=queues, headers=q)
 
 
 
@@ -162,4 +181,7 @@ def update${KEY}(ID, body=None):  # noqa: E501
     body['_sys']['updated_ts'] = int(time.time())
     body['_sys']['updated_by'] = connexion.request.headers['x-api-user']
     collection.replace_one({'_id': ID}, body)
-    publisher(json.dumps(body), routing_key='{}.{}'.format(KEY, 'update'), retry=True, declare=queues, headers={'_id':ID})
+
+    routingKey='{}{}.{}'.format(KEY, dpath(body), 'update')
+    queues = [Queue(routingKey, exchange=exchange, routing_key=routingKey)]
+    publisher(json.dumps(body), routing_key=routingKey, retry=True, declare=queues, headers={'_id':ID})

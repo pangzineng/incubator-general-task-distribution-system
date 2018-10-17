@@ -10,13 +10,21 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('-p','--path', help='the python-flask-server folder', required=True)
 parser.add_argument('-t','--temdir', help='the dir to the injected codes', required=True)
 parser.add_argument('-o','--port', help='the port number to replace flask default 8080', default="8888")
+parser.add_argument('-c','--custom', help='the custom queue key map', default="")
 args = parser.parse_args()
+
+if len(args.custom) > 0:
+    customKeyMap = {k.split(':')[0]:k.split(':')[1] for k in args.custom.split(';')}
+else:
+    customKeyMap = {}
 
 controller_template = open('{}/controller_template.py'.format(args.temdir),'r').read()
 
 for controller in glob.glob('{}/swagger_server/controllers/*_controller.py'.format(args.path)):
     with open(controller, 'w') as f:
-        f.write(controller_template.replace('${KEY}', controller.split('/')[-1].split('_')[0]))
+        keyName = controller.split('/')[-1].split('_')[0]
+        controller_code = controller_template.replace('${KEY}', keyName).replace('${CUSTOM_KEY}', customKeyMap.get(keyName, ''))
+        f.write(controller_code)
 
 encoder_custom = open('{}/encoder_custom_bson.py'.format(args.temdir), 'r').read()
 with open('{}/swagger_server/encoder.py'.format(args.path), 'w') as f:

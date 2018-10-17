@@ -1,0 +1,37 @@
+definitions:
+  schedule:
+    type: object
+    description: the single display schedule of an ad and adboard
+    properties:
+      _id:
+        type: string
+        description: The unique ID
+      adboard:
+        type: object
+        description: the shallow reference of the adboard object
+        properties:
+          _id:
+            type: string
+            description: The unique adboard ID
+      ad:
+        type: object
+        description: the shallow reference of the ad object (represented in PreviewReality)
+        properties:
+          _id:
+            type: string
+            description: The unique ad ID
+          src:
+            type: string
+            description: The source uri of the creative data
+      time:
+        type: object
+        description: the time range of the schedule in unix timestamp (in millisecond)
+        properties:
+          st:
+            type: string
+            description: The start time
+          et:
+            type: string
+            description: The end time
+      _sys:
+        $ref: '#/definitions/_sys'

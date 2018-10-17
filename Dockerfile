@@ -41,11 +41,13 @@ ENV SERVER_NAME=${SERVER_NAME:-python-flask-server}
 ENV SERVER_PORT=${SERVER_PORT:-8888}
 ARG WORKER_NUMBER
 ENV WORKER_NUMBER=${WORKER_NUMBER:-4}
+ARG CUSTOM_KEY
+ENV CUSTOM_KEY=${CUSTOM_KEY}
 COPY bin/code-injection.py /bin/code-injection.py
 COPY etc/python-flask-server /etc/python-flask-server 
 COPY --from=j8 /server/${SERVER_NAME} /server/${SERVER_NAME}
 COPY --from=j8 /etc/${SERVER_SPEC_FILE} /etc/${SERVER_SPEC_FILE}
-RUN python /bin/code-injection.py --path /server/${SERVER_NAME} --temdir /etc/python-flask-server --port ${SERVER_PORT}
+RUN python /bin/code-injection.py --path /server/${SERVER_NAME} --temdir /etc/python-flask-server --port ${SERVER_PORT} --custom ${CUSTOM_KEY}
 RUN apk --update add --virtual build-dependencies build-base \
   && pip install --no-cache-dir -r /server/${SERVER_NAME}/requirements.txt \
   && apk del build-dependencies
