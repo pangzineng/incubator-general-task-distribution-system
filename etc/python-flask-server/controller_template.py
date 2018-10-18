@@ -4,7 +4,7 @@ import six
 from flask import abort
 from swagger_server import util
 
-from kombu import Connection, Producer, Exchange, Queue
+from kombu import Connection, Producer, Exchange, Queue, binding
 from pymongo import MongoClient
 from pymongo.collection import ReturnDocument
 from bson import json_util
@@ -50,6 +50,9 @@ except:
     time.sleep(1)
     sys.exit(1)
 
+def createQueues(qKey):
+    return [Queue(qKey, [binding(exchange, routing_key='{}.{}'.format(qKey, action)) for action in ['create','update','delete']])]
+
 
 def create${KEY}(body=None):  # noqa: E501
     """Create a new ${KEY}
@@ -70,9 +73,8 @@ def create${KEY}(body=None):  # noqa: E501
     body_str = json.dumps(body)
     collection.insert_one(RawBSONDocument(bsonjs.loads(body_str)))
 
-    routingKey='{}{}.{}'.format(KEY, dpath(body), 'create')
-    queues = [Queue(routingKey, exchange=exchange, routing_key=routingKey)]
-    publisher(body_str, routing_key=routingKey, retry=True, declare=queues, headers={'_id':doc_id})
+    qKey='{}{}'.format(KEY, dpath(body))
+    publisher(body_str, routing_key='{}.create'.format(qKey), retry=True, declare=createQueues(qKey), headers={'_id':doc_id})
 
     skey = '{}|{}'.format(KEY, doc_id)
     r.set(skey, body_str)
@@ -98,9 +100,8 @@ def delete${KEY}(ID):  # noqa: E501
     doc_mongo = collection.find_one_and_delete(q)
     doc_str = bsonjs.dumps(doc_mongo.raw)
 
-    routingKey='{}{}.{}'.format(KEY, dpath(json.loads(doc_str)), 'delete')
-    queues = [Queue(routingKey, exchange=exchange, routing_key=routingKey)]
-    publisher(doc_str, routing_key=routingKey, retry=True, declare=queues, headers=q)
+    qKey='{}{}'.format(KEY, dpath(json.loads(doc_str)))
+    publisher(doc_str, routing_key='{}.delete'.format(qKey), retry=True, declare=createQueues(qKey), headers=q)
 
 
 
@@ -182,6 +183,5 @@ def update${KEY}(ID, body=None):  # noqa: E501
     body['_sys']['updated_by'] = connexion.request.headers['x-api-user']
     collection.replace_one({'_id': ID}, body)
 
-    routingKey='{}{}.{}'.format(KEY, dpath(body), 'update')
-    queues = [Queue(routingKey, exchange=exchange, routing_key=routingKey)]
-    publisher(json.dumps(body), routing_key=routingKey, retry=True, declare=queues, headers={'_id':ID})
+    qKey='{}{}'.format(KEY, dpath(body))
+    publisher(json.dumps(body), routing_key='{}.update'.format(qKey), retry=True, declare=createQueues(qKey), headers={'_id':ID})
