@@ -10,10 +10,10 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('-p','--path', help='the python-flask-server folder', required=True)
 parser.add_argument('-t','--temdir', help='the dir to the injected codes', required=True)
 parser.add_argument('-o','--port', help='the port number to replace flask default 8080', default="8888")
-parser.add_argument('-c','--custom', help='the custom queue key map', default="")
+parser.add_argument('-c','--custom', help='the custom queue key map', default="DUMMY")
 args = parser.parse_args()
 
-if len(args.custom) > 0:
+if len(args.custom) > 0 and args.custom != "DUMMY":
     customKeyMap = {k.split(':')[0]:k.split(':')[1] for k in args.custom.split(';')}
 else:
     customKeyMap = {}

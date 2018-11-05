@@ -42,7 +42,7 @@ ENV SERVER_PORT=${SERVER_PORT:-8888}
 ARG WORKER_NUMBER
 ENV WORKER_NUMBER=${WORKER_NUMBER:-4}
 ARG CUSTOM_KEY
-ENV CUSTOM_KEY=${CUSTOM_KEY}
+ENV CUSTOM_KEY=${CUSTOM_KEY:-DUMMY}
 COPY bin/code-injection.py /bin/code-injection.py
 COPY etc/python-flask-server /etc/python-flask-server 
 COPY --from=j8 /server/${SERVER_NAME} /server/${SERVER_NAME}
