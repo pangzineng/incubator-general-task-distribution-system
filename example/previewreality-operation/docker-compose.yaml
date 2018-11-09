@@ -35,16 +35,12 @@ services:
         image: mongo:latest
         # volumes:
         #     - /data/mongodb:/data/db
-        ports:
-            - "27017:27017"
         networks:
             - gtds
     redis:
         image: redis:latest
         # volumes:
         #     - /data/redis:/data
-        ports:
-            - "6379:6379"
         networks:
             - gtds
 networks:
