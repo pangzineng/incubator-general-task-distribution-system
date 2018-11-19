@@ -1,7 +1,16 @@
 version: '2.3'
 services:
-    # api
-    server:
+    nginx:
+        image: nginx:latest
+        ports:
+            - "8888:8888"
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+        depends_on:
+            - api
+        networks:
+            - gtds
+    api:
         image: gtds-previewreality-operation:0.1.0
         environment:
             - RABBITMQ_DEFAULT_USER=guest
@@ -16,8 +25,6 @@ services:
             - mq
             - database
             - redis
-        ports:
-            - "8888:8888"
         networks:
             - gtds
         restart: on-failure
@@ -33,14 +40,14 @@ services:
             - gtds
     database:
         image: mongo:latest
-        # volumes:
-        #     - /data/mongodb:/data/db
+        volumes:
+            - /data/mongodb:/data/db
         networks:
             - gtds
     redis:
         image: redis:latest
-        # volumes:
-        #     - /data/redis:/data
+        volumes:
+            - /data/redis:/data
         networks:
             - gtds
 networks:
