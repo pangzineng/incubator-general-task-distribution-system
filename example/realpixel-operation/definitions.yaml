@@ -15,6 +15,7 @@ definitions:
         enum:
           - full
           - tiny
+          - spp
         default: tiny
       status:
         type: string
