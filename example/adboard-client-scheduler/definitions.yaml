@@ -23,6 +23,14 @@ definitions:
           src:
             type: string
             description: The source uri of the creative data
+          type:
+            type: string
+            description: The creative data type
+            enum:
+              - img
+              - video
+              - web
+            default: img
       time:
         type: object
         description: the time range of the schedule in unix timestamp (in millisecond)
