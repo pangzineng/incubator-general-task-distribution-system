@@ -1,0 +1,209 @@
+definitions:
+  adboard:
+    type: object
+    description: The adboard
+    properties:
+      _id:
+        type: string
+        description: The unique ID
+      name:
+        type: string
+        description: The name
+      address:
+        type: string
+        description: installation address
+      geo:
+        type: object
+        description: geo location info
+        properties:
+          lat:
+            type: number
+            description: latitude
+          lon:
+            type: number
+            description: longitude
+      preview:
+        type: object
+        description: vr preview of the adboard
+        properties:
+          background:
+            type: object
+            description: the background in preview reality
+            properties:
+              _id:
+                type: string
+                description: The unique ID
+              src:
+                type: string
+                description: The source uri of the background image
+              name:
+                type: string
+                description: The name of the background
+              initView:
+                type: object
+                description: The initial viewport of the background
+                properties:
+                  position:
+                    type: string
+                    description: The 'x y z' value of camera position
+                  rotation:
+                    type: string
+                    description: The 'x y z' value (pitch, yaw, roll) of camera rotation
+          view:
+            types: object
+            description: The relative positioning of the adboard on this background
+            properties:
+              size:
+                type: object
+                description: The relative size of the adboard
+                properties:
+                  height:
+                    type: number
+                  width:
+                    type: number
+              coordinate:
+                type: object
+                desription: The relative viewport of the adboard
+                properties:
+                  position:
+                    type: string
+                    description: The 'x y z' value of camera position
+                  rotation:
+                    type: string
+                    description: The 'x y z' value (pitch, yaw, roll) of camera rotation
+      _owner:
+        type: string
+        description: The ID of the owner
+      _sys:
+        $ref: '#/definitions/_sys'
+  ad:
+    type: object
+    description: the ad creative data
+    properties:
+      _id:
+        type: string
+        description: The unique ID
+      name:
+        type: string
+        description: The name
+      type:
+        type: string
+        description: The creative data type
+        enum:
+          - img
+          - video
+          - web
+        default: img
+      src:
+        type: string
+        description: The source uri of the creative data
+      _owner:
+        type: string
+        description: The ID of the owner
+      _sys:
+        $ref: '#/definitions/_sys'
+  adslot:
+    type: object
+    description:  single display schedule of an ad and adboard
+    properties:
+      _id:
+        type: string
+        description: The unique ID
+      startTimestamp:
+        type: string
+        description: The schedule start time (in ms)
+      endTimestamp:
+        type: string
+        description: The schedule end time (in ms)
+      state:
+        type: string
+        description: The state of the ad slot
+        enum:
+          - OPEN
+          - SOLD
+          - LIQUIDATED
+        default: OPEN
+      ad:
+        type: object
+        description: the shallow clone of the ad object
+        properties:
+          _id:
+            type: string
+            description: The unique ad ID
+          name:
+            type: string
+            description: The name
+          type:
+            type: string
+            description: The creative data type
+            enum:
+              - img
+              - video
+              - web
+            default: img
+          src:
+            type: string
+            description: The source uri of the creative data
+      _buyer:
+        type: string
+        description: The ID of the buyer
+      _adboard:
+        type: string
+        description: The corresponding adboard ID
+      _owner:
+        type: string
+        description: The ID of the owner
+      _sys:
+        $ref: '#/definitions/_sys'
+  analysis:
+    type: object
+    description: The video or stream for analysis
+    properties:
+      _id:
+        type: string
+        description: The unique ID
+      adboard:
+        type: string
+        description: The unique adboard ID, as the camera of this analysis attached to
+      type:
+        type: string
+        description: machine learning approach
+        enum:
+          - full
+          - tiny
+          - spp
+        default: tiny
+      status:
+        type: string
+        description: progress of analysis
+        enum:
+          - new
+          - running
+          - finished
+          - error
+        default: new
+      source:
+        type: object
+        description: The video or stream source
+        properties:
+          protocol:
+            type: string
+            description: the transfer protocol of the video source
+            enum:
+              - rtsp_stream
+              - http_stream
+              - http_file
+              - local_file
+            default: http_file
+          uri:
+            type: string
+            description: the uri of the video source
+          meta:
+            type: object
+            description: meta data of the video source
+            properties:
+              startTime:
+                type: string
+                description: The start time of the video if it is a file
+      _sys:
+        $ref: '#/definitions/_sys'
