@@ -36,7 +36,7 @@ def dpath(dict_data):
 
 try:
     ## mongodb connection
-    client = MongoClient('mongodb://{}:{}/'.format(os.getenv('MONGODB_HOST'),os.getenv('MONGODB_PORT')), document_class=RawBSONDocument)
+    client = MongoClient('mongodb://{}:{}/'.format(os.getenv('MONGODB_HOST'),os.getenv('MONGODB_PORT')), username=os.getenv('MONGODB_USER'), password=os.getenv('MONGODB_PASS'), authSource='admin', document_class=RawBSONDocument)
     db = client[os.getenv('MONGODB_DB', 'v2')]
     collection = db[KEY]
     ## rabbitmq connection
@@ -45,7 +45,7 @@ try:
     producer = Producer(connection, exchange=exchange)
     publisher = connection.ensure(producer, producer.publish, max_retries=5)
     ## redis connection
-    r = redis.StrictRedis(host=os.getenv("REDIS_HOST"), db=int(os.getenv("REDIS_DB")))
+    r = redis.StrictRedis(host=os.getenv("REDIS_HOST"), db=int(os.getenv("REDIS_DB")), password=os.getenv("REDIS_PASS"))
 except:
     time.sleep(1)
     sys.exit(1)

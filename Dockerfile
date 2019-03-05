@@ -53,13 +53,3 @@ RUN apk --update add --virtual build-dependencies build-base \
   && apk del build-dependencies
 WORKDIR /server/${SERVER_NAME}
 CMD gunicorn --workers=${WORKER_NUMBER} --bind 0.0.0.0:${SERVER_PORT} swagger_server.__main__:app
-
-## environment variable for run time (specified via running)
-# ENV RABBITMQ_DEFAULT_USER
-# ENV RABBITMQ_DEFAULT_PASS
-# ENV RABBITMQ_HOST
-# ENV RABBITMQ_PORT
-# ENV MONGODB_HOST
-# ENV MONGODB_PORT
-# ENV REDIS_HOST
-# ENV REDIS_DB
