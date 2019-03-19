@@ -8,9 +8,10 @@ docker build \
     --build-arg SERVER_HOST=localhost \
     --build-arg SERVER_PORT=8888 \
     --build-arg SERVRE_BASE_PATH=v1 \
-    --build-arg SERVICE_NAME=PreviewReality \
-    -t gtds-previewreality-operation:0.1.0 ../../
+    --build-arg SERVICE_NAME=AdBoardClient \
+    --build-arg CUSTOM_KEY=schedule:_adboard \
+    -t gtds-adboard-client:0.1.0 ../../
 
 # run locally
-docker-compose -p previewreality-operation down &&
-docker-compose -p previewreality-operation up
+docker-compose -p adboard-client down &&
+docker-compose -p adboard-client up

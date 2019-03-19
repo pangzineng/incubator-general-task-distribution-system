@@ -6,9 +6,9 @@ definitions:
       _id:
         type: string
         description: The unique ID
-      eyeID:
-        type: string 
-        description: ID of the associated eye 
+      adboard:
+        type: string
+        description: The unique adboard ID, as the camera of this analysis attached to
       type:
         type: string
         description: machine learning approach
@@ -49,34 +49,5 @@ definitions:
               startTime:
                 type: string
                 description: The start time of the video if it is a file
-      _sys:
-        $ref: '#/definitions/_sys'
-  eye:
-    type: object
-    description: The tracking camera
-    properties:
-      _id:
-        type: string
-        description: The unique ID
-      name:
-        type: string
-        description: The name of the camera
-      source:
-        type: object
-        description: source information of the camera
-        properties:
-          address:
-            type: string
-            description: installation address
-          geo:
-            type: object
-            description: geo location info
-            properties:
-              lat:
-                type: number
-                description: latitude
-              lon:
-                type: number
-                description: longitude
       _sys:
         $ref: '#/definitions/_sys'

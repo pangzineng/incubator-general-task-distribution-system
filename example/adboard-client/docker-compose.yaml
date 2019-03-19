@@ -11,7 +11,7 @@ services:
         networks:
             - gtds
     api:
-        image: gtds-previewreality-operation:0.1.0
+        image: gtds-adboard-client:0.1.0
         environment:
             - RABBITMQ_DEFAULT_USER=guest
             - RABBITMQ_DEFAULT_PASS=guest
@@ -34,8 +34,8 @@ services:
             - RABBITMQ_DEFAULT_USER=guest
             - RABBITMQ_DEFAULT_PASS=guest
         ports:
-            - "5672:5672"
-            - "15672:15672"
+            - "5670:5672"
+            - "15670:15672"
         networks:
             - gtds
     database:

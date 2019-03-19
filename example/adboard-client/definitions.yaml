@@ -6,20 +6,22 @@ definitions:
       _id:
         type: string
         description: The unique ID
-      adboard:
-        type: object
-        description: the shallow reference of the adboard object
-        properties:
-          _id:
-            type: string
-            description: The unique adboard ID
+      _adslot:
+        type: string
+        description: The matching adslot ID
+      _adboard:
+        type: string
+        description: The corresponding adboard ID
       ad:
         type: object
-        description: the shallow reference of the ad object (represented in PreviewReality)
+        description: the shallow clone of the ad object
         properties:
           _id:
             type: string
             description: The unique ad ID
+          name:
+            type: string
+            description: The name
           src:
             type: string
             description: The source uri of the creative data
@@ -31,6 +33,9 @@ definitions:
               - video
               - web
             default: img
+          _owner:
+            type: string
+            description: The ID of the owner
       time:
         type: object
         description: the time range of the schedule in unix timestamp (in millisecond)
