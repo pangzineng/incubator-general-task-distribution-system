@@ -1,27 +1,24 @@
-# server
+# Introduction
 
-1, Add your data model in to `swagger-spec/definitions.yaml` and the common parts to `swagger-spec/definitions_common.yaml`
+It's a simple web server wrapped around the output of [Swagger Codegen](https://github.com/swagger-api/swagger-codegen) for python flask server.
 
-2, Update your controller logic at `swagger-inject/python-flask-server/controller_template.py`
+It's the server part of the 3 part general data management system
+- **ui**: https://github.com/pangzineng/incubator-general-operation-ui
+- **gateway**: https://github.com/pangzineng/incubator-general-system-gateway
+- **server**: https://github.com/pangzineng/incubator-general-task-distribution-system
 
-3, run script, such as: `./init.sh -v 2.1.1`, for more parameter options just read the script
+# Setup
 
-4, get your latest swagger spec at `./api_swagger_specification.yaml` and your server at `./python-flask-server`
+Follow any one of the [example](./example) (no need to care about the actual data schema) starting at `run.sh` to see how the docker image was built with the pre-defined data schema (in [Swagger 2.0 syntax](https://swagger.io/docs/specification/2-0/basic-structure/))
 
-
-# clients
-
-## prerequisite
-
-- docker is installed, shared volume with host is enabled
-- run below commands in the folder where `api_swagger_specification.yaml` is located
-
-## client (python) 
-
-`docker run --rm -v ${PWD}:/client swaggerapi/swagger-codegen-cli:v2.3.1 generate -i /client/api_swagger_specification.yaml -l python -o /client/python-client`
-
-## client (javascript es6 with promise) 
-
-`docker run --rm -v ${PWD}:/client swaggerapi/swagger-codegen-cli generate -i /client/api_swagger_specification.yaml -l javascript --additional-properties useEs6=true --additional-properties usePromises=true -o /client/es6-client`
-
-Note: js client is not stable, use with care
+Below is a template for the build, only `DEFINITIONS` argument is mandatory, which is the stringified data schema
+```bash
+docker build \
+    --build-arg DEFINITIONS="$DEFINITIONS" \
+    --build-arg VERSION="$VERSION" \
+    --build-arg SERVER_HOST="$SERVER_HOST" \
+    --build-arg SERVER_PORT="$SERVER_PORT" \
+    --build-arg SERVRE_BASE_PATH="$SERVRE_BASE_PATH" \
+    --build-arg SERVICE_NAME="$SERVICE_NAME" \
+    -t ${IMAGE_NAME}:${IMAGE_TAG} .
+```
