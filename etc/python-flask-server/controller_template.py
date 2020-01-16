@@ -36,7 +36,10 @@ def dpath(dict_data):
 
 try:
     ## mongodb connection
-    client = MongoClient('mongodb://{}:{}/'.format(os.getenv('MONGODB_HOST'),os.getenv('MONGODB_PORT')), username=os.getenv('MONGODB_USER'), password=os.getenv('MONGODB_PASS'), authSource='admin', document_class=RawBSONDocument)
+    if os.getenv('MONGODB_USER'):
+        client = MongoClient('mongodb://{}:{}/'.format(os.getenv('MONGODB_HOST'),os.getenv('MONGODB_PORT')), username=os.getenv('MONGODB_USER'), password=os.getenv('MONGODB_PASS'), authSource='admin', document_class=RawBSONDocument)
+    else:
+        client = MongoClient('mongodb://{}:{}/'.format(os.getenv('MONGODB_HOST'),os.getenv('MONGODB_PORT')), document_class=RawBSONDocument)
     db = client[os.getenv('MONGODB_DB', 'v2')]
     collection = db[KEY]
     ## rabbitmq connection
@@ -77,7 +80,7 @@ def create${KEY}(body=None):  # noqa: E501
     publisher(body_str, routing_key='{}.create'.format(qKey), retry=True, declare=createQueues(qKey), headers={'_id':doc_id})
 
     skey = '{}|{}'.format(KEY, doc_id)
-    r.set(skey, body_str)
+    r.set(skey, body_str, ex=3)
     r.delete(KEY)
 
     return doc_id
@@ -139,6 +142,7 @@ def get_all${KEY}(offset=0, limit=20, q=None, p=None, sort=None, order=1):  # no
     count = collection.count_documents(filter_json or {})
     response = { 'total': count, 'results': [json.loads(bsonjs.dumps(doc.raw)) for doc in docs] }
     r.hset(KEY, hkey, json.dumps(response))
+    r.expire(KEY, 3)
     return response
 
 
@@ -157,7 +161,7 @@ def get${KEY}(ID):  # noqa: E501
     if not doc_str:
         doc = collection.find_one({'_id': ID})
         doc_str = bsonjs.dumps(doc.raw)
-        r.set(skey, doc_str)
+        r.set(skey, doc_str, ex=3)
     return json.loads(doc_str)
 
 
